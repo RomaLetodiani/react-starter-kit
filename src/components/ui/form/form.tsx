@@ -16,9 +16,9 @@ import {
 } from 'react-hook-form';
 import { ZodType, z } from 'zod';
 
-import { Label } from './label';
-
 import { cn } from '@/utils/cn';
+
+import { Label } from './label';
 
 type FormFieldContextValue<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
   name: TName;

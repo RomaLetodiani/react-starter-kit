@@ -2,11 +2,11 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import { Link } from '../ui/common/link';
-
 import logo from '@/assets/logo.svg';
 import { paths } from '@/config/paths';
 import { useUser } from '@/lib/auth';
+
+import { Link } from '../ui/common/link';
 
 type LayoutProps = {
   children: React.ReactNode;

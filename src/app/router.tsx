@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
-import { PlatformRoot, ErrorBoundary as PlatformRootErrorBoundary } from './routes/platform/root';
-
 import { paths } from '@/config/paths';
 import { ProtectedRoute } from '@/lib/auth';
+
+import { PlatformRoot, ErrorBoundary as PlatformRootErrorBoundary } from './routes/platform/root';
 
 const convert = (queryClient: QueryClient) => (m: any) => {
   const { clientLoader, clientAction, default: Component, ...rest } = m;

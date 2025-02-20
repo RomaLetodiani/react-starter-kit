@@ -1,11 +1,9 @@
-import { useDeleteUser } from '../api/delete-user';
-
 import { Button } from '@/components/ui/common/button';
 import { ConfirmationDialog } from '@/components/ui/dialog';
 import { useNotifications } from '@/components/ui/notifications';
-import { useTeams } from '@/features/teams/api/get-teams';
 import { useUser } from '@/lib/auth';
-import { logger } from '@/utils/logger';
+
+import { useDeleteUser } from '../api/delete-user';
 
 type DeleteUserProps = {
   id: string;
@@ -13,8 +11,6 @@ type DeleteUserProps = {
 
 export const DeleteUser = ({ id }: DeleteUserProps) => {
   const user = useUser();
-  const teams = useTeams();
-  logger.info(teams);
   const { addNotification } = useNotifications();
   const deleteUserMutation = useDeleteUser({
     mutationConfig: {

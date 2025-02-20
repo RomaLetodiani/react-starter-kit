@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint src",
+    "lint:fix": "eslint --fix src",
     "check-types": "tsc --project tsconfig.json --pretty --noEmit",
     "preview": "vite preview",
     "format": "prettier --write \"**/*.{ts,tsx,json,css}\"",
@@ -42,6 +43,8 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.6",
+    "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.19.0",
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.8",
@@ -50,6 +53,8 @@
     "@typescript-eslint/parser": "^8.24.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.8.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -68,6 +73,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,mdx}": [
+      "npm run lint:fix",
       "npm run lint",
       "npm run format"
     ]

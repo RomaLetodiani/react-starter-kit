@@ -1,61 +1,97 @@
-import js from '@eslint/js';
-import checkFile from 'eslint-plugin-check-file';
-import importPlugin from 'eslint-plugin-import';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import prettier from 'eslint-plugin-prettier';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import checkFile from 'eslint-plugin-check-file';
+import tsParser from '@typescript-eslint/parser';
+import { fixupConfigRules } from '@eslint/compat';
+import { FlatCompat } from '@eslint/eslintrc';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import js from '@eslint/js';
 
-export default tseslint.config(
-  // Base config that applies to all files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
+
+export default [
   {
-    ignores: ['dist', 'node_modules/*'],
+    ignores: ['node_modules/*'],
   },
-
-  // Config for TypeScript files
+  ...compat.extends('eslint:recommended'),
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    plugins: {
+      'check-file': checkFile,
+    },
+
     languageOptions: {
-      ecmaVersion: 2020,
+      globals: {
+        ...globals.node,
+      },
+
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+  },
+  ...fixupConfigRules(
+    compat.extends(
+      'eslint:recommended',
+      'plugin:import/errors',
+      'plugin:import/warnings',
+      'plugin:import/typescript',
+      'plugin:@typescript-eslint/recommended',
+      'plugin:react/recommended',
+      'plugin:react-hooks/recommended',
+      'plugin:jsx-a11y/recommended',
+      'plugin:prettier/recommended',
+    ),
+  ).map((config) => ({
+    ...config,
+    files: ['**/*.ts', '**/*.tsx'],
+  })),
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+
+    languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
       },
-      parser: tseslint.parser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
+
+      parser: tsParser,
+    },
+
+    settings: {
+      react: {
+        version: 'detect',
+      },
+
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.json',
+          alwaysTryTypes: true,
+        },
+        node: {
+          paths: ['src'],
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+        alias: {
+          map: [['@', './src']],
+          extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+        },
       },
     },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-      'check-file': checkFile,
-      import: importPlugin,
-      react: reactPlugin,
-      'jsx-a11y': jsxA11y,
-      prettier: prettier,
-    },
+
     rules: {
       'import/no-restricted-paths': [
         'error',
         {
           zones: [
-            // disables cross-feature imports:
-            // eg. src/features/teams should not import from src/features/comments, etc.
             {
               target: './src/features/auth',
               from: './src/features',
               except: ['./auth'],
-            },
-            {
-              target: './src/features/comments',
-              from: './src/features',
-              except: ['./comments'],
             },
             {
               target: './src/features/teams',
@@ -67,33 +103,36 @@ export default tseslint.config(
               from: './src/features',
               except: ['./users'],
             },
-            // enforce unidirectional codebase:
-
-            // e.g. src/app can import from src/features but not the other way around
             {
               target: './src/features',
               from: './src/app',
             },
-
-            // e.g src/features and src/app can import from these shared modules but not the other way around
             {
               target: ['./src/components', './src/hooks', './src/lib', './src/types', './src/utils'],
+
               from: ['./src/features', './src/app'],
             },
           ],
         },
       ],
+
       'import/no-cycle': 'error',
       'linebreak-style': ['error', 'unix'],
       'react/prop-types': 'off',
+
       'import/order': [
         'error',
         {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
           'newlines-between': 'always',
-          alphabetize: { order: 'asc', caseInsensitive: true },
+
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
         },
       ],
+
       'import/default': 'off',
       'import/no-named-as-default-member': 'off',
       'import/no-named-as-default': 'off',
@@ -104,7 +143,15 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': ['off'],
       '@typescript-eslint/no-empty-function': ['off'],
       '@typescript-eslint/no-explicit-any': ['off'],
-      'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+
+      'prettier/prettier': [
+        'error',
+        {},
+        {
+          usePrettierrc: true,
+        },
+      ],
+
       'check-file/filename-naming-convention': [
         'error',
         {
@@ -115,20 +162,14 @@ export default tseslint.config(
         },
       ],
     },
-    settings: {
-      react: { version: 'detect' },
-      'import/resolver': {
-        typescript: {},
-      },
-    },
   },
-
-  // Config for non-test folders
   {
     files: ['src/**/!(__tests__)/*'],
+
     plugins: {
       'check-file': checkFile,
     },
+
     rules: {
       'check-file/folder-naming-convention': [
         'error',
@@ -138,4 +179,4 @@ export default tseslint.config(
       ],
     },
   },
-);
+];
