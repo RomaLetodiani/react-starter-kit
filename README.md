@@ -1,1 +1,1 @@
-# JobIA AI Platform
+# React Starter Kit
