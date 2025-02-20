@@ -74,7 +74,6 @@
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,mdx}": [
       "npm run lint:fix",
-      "npm run lint",
       "npm run format"
     ]
   }
